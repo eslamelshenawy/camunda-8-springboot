@@ -1,0 +1,60 @@
+version: "3.8"
+
+services:
+  zeebe:
+    image: camunda/zeebe:8.3.5
+    container_name: zeebe-broker
+    environment:
+      - ZEEBE_LOG_LEVEL=debug
+      - ZEEBE_BROKER_NETWORK_MAXMESSAGESIZE=128KB
+    ports:
+      - "26500:26500" # Zeebe gRPC Client Communication
+      - "9600:9600"   # Zeebe Metrics
+    networks:
+      - zeebe-network
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"  # Adjust JVM memory settings as needed
+    ports:
+      - "9200:9200" # Elasticsearch HTTP API
+    networks:
+      - zeebe-network
+
+  operate:
+    image: camunda/operate:latest
+    container_name: operate
+    environment:
+      # Connect Operate to the Elasticsearch instance
+      - ELASTICSEARCH_HOST=elasticsearch
+      - ELASTICSEARCH_PORT=9200
+      # Connect Operate to Zeebe
+      - CAMUNDA_OPERATE_ZEEBE_GATEWAY_ADDRESS=zeebe:26500
+      - CAMUNDA_OPERATE_LOG_LEVEL=debug
+    ports:
+      - "8080:8080"  # Operate Web Interface
+    depends_on:
+      - zeebe
+      - elasticsearch
+    networks:
+      - zeebe-network
+
+  envoy:
+    image: envoyproxy/envoy:v1.28.0
+    container_name: zeebe-envoy
+    ports:
+      - "9900:9900" # Expose Envoy JSON-RPC endpoint (browser accessible)
+      - "9901:9901" # Envoy admin UI
+    volumes:
+      - ./envoy-config.yaml:/etc/envoy/envoy.yaml
+    depends_on:
+      - zeebe
+    networks:
+      - zeebe-network
+
+networks:
+  zeebe-network:
+    driver: bridge

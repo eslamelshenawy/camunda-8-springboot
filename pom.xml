@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>io.berndruecker</groupId>
+	<artifactId>customer-onboarding-camunda-8-springboot</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<description>Customer Onboarding Example Using Camunda 8 and Spring Boot</description>
+
+	<properties>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+		<spring.boot.version>3.1.5</spring.boot.version>
+		<zeebe.version>8.3.0</zeebe.version>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>${spring.boot.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<!-- Spring Boot Starter for WebFlux -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+
+		<!-- Camunda Zeebe Client -->
+		<dependency>
+			<groupId>io.camunda</groupId>
+			<artifactId>zeebe-client-java</artifactId>
+			<version>${zeebe.version}</version>
+		</dependency>
+
+		<!-- Camunda Spring Zeebe Starter -->
+		<dependency>
+			<groupId>io.camunda</groupId>
+			<artifactId>spring-zeebe-starter</artifactId>
+			<version>${zeebe.version}</version>
+		</dependency>
+
+		<!-- Testing Dependencies -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.junit.vintage</groupId>
+					<artifactId>junit-vintage-engine</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- Camunda Test Starter -->
+		<dependency>
+			<groupId>io.camunda.spring</groupId>
+			<artifactId>spring-boot-starter-camunda-test</artifactId>
+			<version>${zeebe.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- WebJars for jQuery -->
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>jquery</artifactId>
+			<version>3.6.1</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- Spring Boot Maven Plugin -->
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+
+			<!-- Maven Surefire Plugin for Testing -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+
+			<!-- Exec Maven Plugin for Running the Application -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>io.berndruecker.onboarding.customer.CustomerOnboardingSpringbootApplication</mainClass>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
